@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">BookLog</string>
+    <string name="header">Enter Details To Authenticate</string>
+    <string name="email">Enter you email</string>
+    <string name="password">Enter your password</string>
+    <string name="login">Login</string>
+    <string name="create_account">Create Account</string>
 </resources>
