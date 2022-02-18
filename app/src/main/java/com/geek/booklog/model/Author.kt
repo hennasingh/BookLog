@@ -10,6 +10,5 @@ open class Author(
     @PrimaryKey
     var _id: ObjectId? = null,
     var name: String? = null,
-    var books: RealmList<Book>? = null
-): RealmObject() {
-}
+    var books: RealmList<Book>? = RealmList()
+): RealmObject() { }
