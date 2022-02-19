@@ -11,6 +11,9 @@
         android:theme="@style/Theme.BookLog">
         <activity
             android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LibraryActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
