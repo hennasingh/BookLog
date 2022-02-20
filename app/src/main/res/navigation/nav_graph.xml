@@ -2,6 +2,23 @@
 <navigation
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/bookListFragment">
 
+    <fragment
+        android:id="@+id/bookListFragment"
+        android:name="com.geek.booklog.BookListFragment"
+        android:label="fragment_book_list"
+        tools:layout="@layout/fragment_book_list" />
+    <fragment
+        android:id="@+id/addBookFragment"
+        android:name="com.geek.booklog.AddBookFragment"
+        android:label="fragment_add_book"
+        tools:layout="@layout/fragment_add_book" />
+    <fragment
+        android:id="@+id/addOwnerFragment"
+        android:name="com.geek.booklog.AddOwnerFragment"
+        android:label="fragment_add_owner"
+        tools:layout="@layout/fragment_add_owner" />
 </navigation>
