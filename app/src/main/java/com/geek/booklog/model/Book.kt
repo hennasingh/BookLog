@@ -15,7 +15,6 @@ open class Book(
     @Required
     var name: String = "",
 
-    @Required
     var isRead: Boolean = false,
 
     var authors: RealmList<Author> = RealmList()

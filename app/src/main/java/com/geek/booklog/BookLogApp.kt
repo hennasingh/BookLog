@@ -6,7 +6,7 @@ import io.realm.mongodb.App
 import io.realm.mongodb.AppConfiguration
 import timber.log.Timber
 
-const val appId = "booklog-zhnpl"
+//const val appId = "booklog-zhnpl"
 lateinit var bookLogApp: App
 
 class BookLogApp: Application() {
@@ -19,7 +19,7 @@ class BookLogApp: Application() {
         Timber.plant(Timber.DebugTree())
 
 
-        bookLogApp = App(AppConfiguration.Builder(appId).build())
+       // bookLogApp = App(AppConfiguration.Builder(appId).build())
 
     }
 
