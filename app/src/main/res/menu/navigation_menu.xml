@@ -9,8 +9,8 @@
         android:title="Add Book"
         android:icon="@drawable/ic_baseline_add_book"/>
 
-    <item android:id="@+id/addOwnerFragment"
-        android:title="Add Owner"
+    <item android:id="@+id/addAuthorFragment"
+        android:title="Add Author"
         android:icon="@drawable/ic_baseline_add_owner"/>
 
 </menu>

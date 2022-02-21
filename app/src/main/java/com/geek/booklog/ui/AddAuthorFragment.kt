@@ -1,10 +1,11 @@
-package com.geek.booklog
+package com.geek.booklog.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.geek.booklog.R
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -34,7 +35,7 @@ class AddOwnerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_owner, container, false)
+        return inflater.inflate(R.layout.fragment_add_author, container, false)
     }
 
     companion object {

@@ -13,7 +13,7 @@ import timber.log.Timber
 
 class LibraryActivity : AppCompatActivity() {
 
-    //private var user: User? = null
+    private var user: User? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,23 +34,25 @@ class LibraryActivity : AppCompatActivity() {
         // Setting Up ActionBar with Navigation Controller
         // Pass the IDs of top-level destinations in AppBarConfiguration
         val appBarConfiguration = AppBarConfiguration(
-            topLevelDestinationIds = setOf (
+            topLevelDestinationIds = setOf(
                 R.id.bookListFragment,
                 R.id.addBookFragment,
-                R.id.addOwnerFragment
+                R.id.addAuthorFragment
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
 
     }
 
-//    override fun onStart() {
-//        super.onStart()
-//
-//        user = bookLogApp.currentUser()
-//        Timber.d("User is $user")
-//        if (user == null) {
-//            // if no user is currently logged in, start the login activity so the user can authenticate
-//            startActivity(Intent(this, LoginActivity::class.java))
-//        }
+    override fun onStart() {
+        super.onStart()
+
+        user = bookLogApp.currentUser()
+
+        Timber.d("User is $user")
+        if (user == null) {
+            // if no user is currently logged in, start the login activity so the user can authenticate
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
     }
+}

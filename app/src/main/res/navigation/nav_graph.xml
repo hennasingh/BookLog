@@ -8,17 +8,12 @@
 
     <fragment
         android:id="@+id/bookListFragment"
-        android:name="com.geek.booklog.BookListFragment"
+        android:name="com.geek.booklog.ui.BookListFragment"
         android:label="Book List"
         tools:layout="@layout/fragment_book_list" />
     <fragment
         android:id="@+id/addBookFragment"
-        android:name="com.geek.booklog.AddBookFragment"
+        android:name="com.geek.booklog.ui.AddBookFragment"
         android:label="Add Book"
         tools:layout="@layout/fragment_add_book" />
-    <fragment
-        android:id="@+id/addOwnerFragment"
-        android:name="com.geek.booklog.AddOwnerFragment"
-        android:label="Add Owner"
-        tools:layout="@layout/fragment_add_owner" />
 </navigation>
