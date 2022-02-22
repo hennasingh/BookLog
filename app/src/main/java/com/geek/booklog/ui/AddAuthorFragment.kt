@@ -5,29 +5,27 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.geek.booklog.R
+import com.geek.booklog.bookLogApp
+import com.geek.booklog.model.Author
+import io.realm.Realm
+import io.realm.mongodb.sync.SyncConfiguration
+import kotlinx.android.synthetic.main.fragment_add_author.*
+import org.bson.types.ObjectId
+import timber.log.Timber
+import java.util.concurrent.TimeUnit
+import javax.security.auth.callback.Callback
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [AddOwnerFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class AddOwnerFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class AddAuthorFragment : Fragment() {
+
+
+    private lateinit var realmClass: Realm
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
 
     override fun onCreateView(
@@ -35,26 +33,59 @@ class AddOwnerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_author, container, false)
+        val view =  inflater.inflate(R.layout.fragment_add_author, container, false)
+        button_add.setOnClickListener{
+            addAuthor()
+        }
+        return view;
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AddOwnerFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddOwnerFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private fun addAuthor() {
+
+        if(!validateText()){
+            addAuthorFailed("Field cannot be empty")
+            return
+        }
+
+        val authorName = authorName.text.toString()
+
+        val config = SyncConfiguration.Builder(bookLogApp.currentUser(), "PUBLIC")
+            .waitForInitialRemoteData(500, TimeUnit.MILLISECONDS)
+            .build()
+
+        Realm.getInstanceAsync(config, object : Realm.Callback() {
+            override fun onSuccess(realm: Realm) {
+                    realmClass = realm
+                 createAuthorObject(authorName)
             }
+        })
     }
+
+    private fun createAuthorObject(authorName: String) {
+        realmClass.executeTransactionAsync{
+            val author = it.createObject(Author::class.java)
+
+            //configure the instance
+            author.name = authorName
+
+        }
+    }
+
+    private fun validateText(): Boolean = when{
+        // zero-length usernames and passwords are not valid (or secure), so prevent users from creating accounts with those client-side.
+        authorName.text.toString().isEmpty() -> false
+        else -> true
+    }
+
+    private fun addAuthorFailed(errorMsg: String) {
+        Timber.e(errorMsg)
+        Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        realmClass.close()
+    }
+
+
 }

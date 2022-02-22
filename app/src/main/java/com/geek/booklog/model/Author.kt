@@ -11,7 +11,8 @@ import org.bson.types.ObjectId
 open class Author(
 
     @PrimaryKey
-    var _id: ObjectId? = null,
+    var _id: ObjectId = ObjectId(),
+
     @Required
     var name: String = "",
 

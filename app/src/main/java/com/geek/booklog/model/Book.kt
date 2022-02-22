@@ -10,12 +10,14 @@ import org.bson.types.ObjectId
 
 open class Book(
     @PrimaryKey
-    var _id: ObjectId? = null,
+    var _id: ObjectId = ObjectId(),
 
     @Required
     var name: String = "",
 
     var isRead: Boolean = false,
+
+    var _partition: String ="PUBLIC",
 
     var authors: RealmList<Author> = RealmList()
 ) : RealmObject() {}

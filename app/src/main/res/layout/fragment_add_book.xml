@@ -18,7 +18,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <EditText
-                android:id="@+id/bookname"
+                android:id="@+id/bookName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Add Book Name"
@@ -36,9 +36,11 @@
             app:layout_constraintTop_toBottomOf="@id/book_layout">
 
             <EditText
-                android:id="@+id/author"
+                android:id="@+id/authorsBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawableRight="@drawable/ic_baseline_arrow_drop_down"
+                android:drawablePadding="12dp"
                 android:hint="Add Author Name"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -59,7 +61,7 @@
         android:orientation="horizontal"
         android:layout_marginStart="30dp"
         app:layout_constraintStart_toEndOf="@id/isRead"
-        app:layout_constraintBottom_toTopOf="@id/button_add"
+        app:layout_constraintBottom_toTopOf="@id/button_addBook"
         app:layout_constraintTop_toBottomOf="@id/author_layout">
         <RadioButton
             android:id="@+id/yes"
@@ -78,7 +80,7 @@
 
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_add"
+            android:id="@+id/button_addBook"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="25dp"

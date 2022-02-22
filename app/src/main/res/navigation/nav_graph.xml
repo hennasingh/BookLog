@@ -16,4 +16,14 @@
         android:name="com.geek.booklog.ui.AddBookFragment"
         android:label="Add Book"
         tools:layout="@layout/fragment_add_book" />
+
+    <fragment
+        android:id="@+id/addAuthorFragment"
+        android:name="com.geek.booklog.ui.AddAuthorFragment"
+        android:label="Add Author"
+        tools:layout="@layout/fragment_add_book" />
+
+
+
+
 </navigation>
