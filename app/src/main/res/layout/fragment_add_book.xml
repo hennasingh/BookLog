@@ -63,6 +63,7 @@
         app:layout_constraintStart_toEndOf="@id/isRead"
         app:layout_constraintBottom_toTopOf="@id/button_addBook"
         app:layout_constraintTop_toBottomOf="@id/author_layout">
+
         <RadioButton
             android:id="@+id/yes"
             android:layout_width="wrap_content"
@@ -76,6 +77,7 @@
             android:layout_marginStart="15dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:text="No"/>
+
     </RadioGroup>
 
 

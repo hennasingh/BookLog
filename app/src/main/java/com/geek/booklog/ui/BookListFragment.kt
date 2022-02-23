@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.geek.booklog.R
 import com.geek.booklog.bookLogApp
 import com.geek.booklog.model.Book
@@ -20,8 +21,9 @@ class BookListFragment : Fragment() {
     private lateinit var realmList: Realm
     private lateinit var adapter: BookListAdapter
 
-    override fun onStart() {
-        super.onStart()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         val config = SyncConfiguration.Builder(
             bookLogApp.currentUser(),
             "PUBLIC"
@@ -43,18 +45,18 @@ class BookListFragment : Fragment() {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_book_list, container, false)
 
+        view.findViewById<RecyclerView>(R.id.rv_bookList).layoutManager = LinearLayoutManager(context)
         setUpRecyclerView()
-        return view;
+        return view
     }
 
     private fun setUpRecyclerView() {
-        rv_bookList.layoutManager = LinearLayoutManager(context)
        adapter = BookListAdapter(realmList.where(Book::class.java).sort("name").findAll())
         rv_bookList.adapter = adapter
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         // its recommended to close realm references even if the user does not logout
         realmList.close()
     }
