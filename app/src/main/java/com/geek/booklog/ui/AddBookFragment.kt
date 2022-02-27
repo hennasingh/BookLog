@@ -1,33 +1,42 @@
 package com.geek.booklog.ui
 
+
+import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log.d
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.geek.booklog.R
+import com.geek.booklog.bookLogApp
+import com.geek.booklog.model.Author
+import com.geek.booklog.model.Book
+import io.realm.Realm
+import io.realm.mongodb.sync.SyncConfiguration
+import kotlinx.android.synthetic.main.fragment_add_book.*
+import timber.log.Timber
+import kotlin.collections.ArrayList
 
 
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AddBookFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AddBookFragment : Fragment() {
 
-    private var param1: String? = null
-    private var param2: String? = null
+        private lateinit var realmClass: Realm
+        private var selectedItems: ArrayList<Int> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
+        val config = SyncConfiguration.Builder(bookLogApp.currentUser(), "PUBLIC")
+            .build()
+
+        Realm.getInstanceAsync(config, object: Realm.Callback(){
+            override fun onSuccess(realm: Realm) {
+                realmClass = realm
+            }
+        })
     }
 
     override fun onCreateView(
@@ -38,23 +47,82 @@ class AddBookFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_add_book, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AddBookFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddBookFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onStart() {
+        super.onStart()
+
+        button_addBook.setOnClickListener{
+            addBook()
+        }
+
+        authorsBox.setOnClickListener{
+            loadAuthors()
+        }
+    }
+
+    private fun loadAuthors() {
+        realmClass.executeTransactionAsync{
+            val authorList = it.where(Author::class.java).sort("name").findAll()
+            val nameList = ArrayList<String>()
+            authorList.toTypedArray().map{obj->
+                nameList.add(obj.name)
             }
+            openDialogBox(nameList)
+        }
+    }
+
+    private fun openDialogBox(authorList: ArrayList<String>) {
+
+        val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Select Author/s")
+        val selectedAuthors = BooleanArray(authorList.size)
+
+        builder.setMultiChoiceItems(authorList, selectedAuthors) { dialog, which, isChecked ->
+            if (isChecked) {
+                //when checkbox selected, add position
+                selectedItems.add(which)
+            } else if (selectedItems.contains(which)) {
+                //when checkbox unselected
+                //remove pos from list
+                selectedItems.remove(which)
+            }
+        }
+        builder.setPositiveButton("OK") { dialog, which ->
+            selectedItems.forEach{
+                Timber.d("Authors, ${authorList[it]}")
+            }
+        }
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener{ dialog, id ->
+                    dialog.dismiss()
+            })
+
+        builder.create()
+    }
+
+    fun onRadioButtonClicked(view:View){
+
+    }
+
+    private fun addBook() {
+
+        if(!validateInfo()){
+            addBookFailed("Fields cannot be empty")
+        }
+        val bookName =  bookName.text.toString()
+    }
+
+    private fun validateInfo(): Boolean = when {
+        bookName.text.isEmpty() -> false
+        else ->true
+
+    }
+
+    private fun addBookFailed(errorMsg: String){
+        Timber.e(errorMsg)
+        Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        realmClass.close()
     }
 }
