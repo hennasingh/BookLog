@@ -28,11 +28,7 @@ class AddAuthorFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view =  inflater.inflate(R.layout.fragment_add_author, container, false)
-        button_add.setOnClickListener{
-            addAuthor()
-        }
-        return view;
+        return inflater.inflate(R.layout.fragment_add_author, container, false)
     }
 
     private fun addAuthor() {
@@ -57,13 +53,18 @@ class AddAuthorFragment : Fragment() {
     }
 
     private fun createAuthorObject(authorName: String) {
-        realmClass.executeTransactionAsync{
-            val author = it.createObject(Author::class.java)
 
+        realmClass.executeTransactionAsync({
+            val author = it.createObject(Author::class.java, ObjectId())
             //configure the instance
             author.name = authorName
-
-        }
+        }, {
+            Timber.d("Successfully Added")
+            Toast.makeText(context, "Author successfully added", Toast.LENGTH_LONG).show()
+        }, {
+            Timber.e("Error adding Author %s",it.localizedMessage)
+            Toast.makeText(context, "Author cannot be added, Try again!", Toast.LENGTH_LONG).show()
+        })
     }
 
     private fun validateText(): Boolean = when{
@@ -77,9 +78,16 @@ class AddAuthorFragment : Fragment() {
         Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         realmClass.close()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        button_add.setOnClickListener{
+            addAuthor()
+        }
     }
 
 

@@ -19,8 +19,13 @@ class LibraryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_library)
 
-        setUpViews()
+        user = bookLogApp.currentUser()
 
+        Timber.d("User is $user")
+        if (user == null) {
+            // if no user is currently logged in, start the login activity so the user can authenticate
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
     }
 
     private fun setUpViews() {
@@ -46,13 +51,6 @@ class LibraryActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-
-        user = bookLogApp.currentUser()
-
-        Timber.d("User is $user")
-        if (user == null) {
-            // if no user is currently logged in, start the login activity so the user can authenticate
-            startActivity(Intent(this, LoginActivity::class.java))
-        }
+        setUpViews()
     }
 }
