@@ -76,7 +76,7 @@ class AddBookFragment : Fragment() {
         builder.setTitle("Select Author/s")
         val selectedAuthors = BooleanArray(authorList.size)
 
-        builder.setMultiChoiceItems(authorList, selectedAuthors) { dialog, which, isChecked ->
+        builder.setMultiChoiceItems(authorList.toTypedArray(), selectedAuthors) { dialog, which, isChecked ->
             if (isChecked) {
                 //when checkbox selected, add position
                 selectedItems.add(which)
