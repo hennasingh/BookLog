@@ -1,19 +1,23 @@
 package com.geek.booklog.ui
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.geek.booklog.LoginActivity
 import com.geek.booklog.R
 import com.geek.booklog.bookLogApp
+import com.geek.booklog.databinding.FragmentBookListBinding
 import com.geek.booklog.model.Book
 import com.geek.booklog.model.BookListAdapter
 import io.realm.Realm
+import io.realm.mongodb.User
 import io.realm.mongodb.sync.SyncConfiguration
-import kotlinx.android.synthetic.main.fragment_book_list.*
+import timber.log.Timber
 
 
 class BookListFragment : Fragment() {
@@ -22,20 +26,34 @@ class BookListFragment : Fragment() {
     private lateinit var adapter: BookListAdapter
 
 
+    private var user: User? = null
+     var listBinding: FragmentBookListBinding? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val config = SyncConfiguration.Builder(
-            bookLogApp.currentUser(),
-            "PUBLIC"
-        )
-            .waitForInitialRemoteData()
-            .build()
+        Timber.d("onCreate")
+        user = bookLogApp.currentUser()
 
-        Realm.getInstanceAsync(config, object:Realm.Callback(){
-            override fun onSuccess(realm: Realm) {
-                realmList = realm
-            }
-        })
+        Timber.d("User is $user")
+        if (user == null) {
+            // if no user is currently logged in, start the login activity so the user can authenticate
+            startActivity(Intent(requireContext(), LoginActivity::class.java))
+        } else {
+
+            val config = SyncConfiguration.Builder(
+                bookLogApp.currentUser(),
+                "PUBLIC"
+            ).build()
+
+            //        Realm.getInstanceAsync(config, object:Realm.Callback(){
+//            override fun onSuccess(realm: Realm) {
+//                Timber.d("Realm downloaded")
+//                realmList = realm
+//            }
+//        })
+
+            realmList = Realm.getInstance(config)
+        }
     }
 
     override fun onCreateView(
@@ -43,16 +61,21 @@ class BookListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view =  inflater.inflate(R.layout.fragment_book_list, container, false)
-
-        view.findViewById<RecyclerView>(R.id.rv_bookList).layoutManager = LinearLayoutManager(context)
-        setUpRecyclerView()
-        return view
+        Timber.d("onCreateView")
+        listBinding = FragmentBookListBinding.inflate(layoutInflater, container, false)
+        return listBinding?.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        listBinding?.rvBookList?.layoutManager = LinearLayoutManager(context)
+        setUpRecyclerView()
+    }
+
 
     private fun setUpRecyclerView() {
        adapter = BookListAdapter(realmList.where(Book::class.java).sort("name").findAll())
-        rv_bookList.adapter = adapter
+        listBinding?.rvBookList?.adapter = adapter
     }
 
     override fun onStop() {
