@@ -28,8 +28,8 @@ class AddBookFragment : Fragment(){
         private lateinit var realmClass: Realm
          var selectedItems: ArrayList<Int> = ArrayList()
          var addBinding: FragmentAddBookBinding? = null
-        var bookObject = Book()
-        private val authorsToAdd: RealmList<Author> = RealmList()
+         var bookObject = Book()
+         private val authorsToAdd: RealmList<Author> = RealmList()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +48,6 @@ class AddBookFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         addClickListeners()
-
     }
 
     override fun onCreateView(
@@ -81,9 +80,11 @@ class AddBookFragment : Fragment(){
         }
         addBinding!!.buttonAddBook.setOnClickListener{
                 realmClass.executeTransactionAsync ({realm ->
-                  val booktoAdd = realm.createObject(BookRealm::class.java, ObjectId())
+                    val booktoAdd = realm.createObject(BookRealm::class.java, ObjectId())
                     booktoAdd.name = bookObject.name
                     booktoAdd.isRead = bookObject.isRead
+                    booktoAdd.authors = realm.copyToRealm(bookObject.authors) as RealmList<Author>
+
                 }, {
                     Timber.d("Book Object Added Successfuly")
                 }, {throwError ->
@@ -94,12 +95,13 @@ class AddBookFragment : Fragment(){
     }
 
     private fun loadAuthors() {
-        val nameList = ArrayList<String>()
+        var nameList = ArrayList<Author>()
         realmClass.executeTransactionAsync({
             val authorList = it.where(Author::class.java).sort("name").findAll()
-            authorList.toTypedArray().map { obj ->
-                nameList.add(obj.name)
-            }
+             nameList = it.copyFromRealm(authorList) as ArrayList<Author>
+//            authorList.toTypedArray().map { obj ->
+//                nameList.add(obj.name)
+//            }
         }, {
             if(nameList.size>0) openDialogBox(nameList)
             else {
@@ -111,13 +113,13 @@ class AddBookFragment : Fragment(){
         })
     }
 
-    private fun openDialogBox(nameList: ArrayList<String>) {
+    private fun openDialogBox(nameList: ArrayList<Author>) {
 
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Select Author/s")
         val selectedAuthors = BooleanArray(nameList.size)
-
-        builder.setMultiChoiceItems(nameList.toTypedArray(), selectedAuthors) { dialog, which, isChecked ->
+        val stringAuthorList = nameList.map{it.name}.toTypedArray()
+        builder.setMultiChoiceItems(stringAuthorList, selectedAuthors) { dialog, which, isChecked ->
             if (isChecked) {
                 //when checkbox selected, add position
                 selectedItems.add(which)
@@ -130,17 +132,22 @@ class AddBookFragment : Fragment(){
         builder.setPositiveButton("OK") { dialog, which ->
 
             selectedItems.forEach{
-                Timber.d("Authors, ${nameList[it]}")
-                realmClass.executeTransactionAsync({ realm ->
-                   realm.where(Author::class.java).equalTo("name", nameList[it]).findAll()
-                       .map{addAuthor ->
-                      bookObject.authors.add(addAuthor)
-                   }
-                }, {
-                    Timber.d("Author added successfully")
-                }, { throwable ->
-                    Timber.d("Error adding the author %s", throwable.localizedMessage)
-                })
+                Timber.d("Authors, ${stringAuthorList[it]}")
+                nameList.forEach {author ->
+                    if(stringAuthorList[it] == author.name){
+                        bookObject.authors.add(author)
+                    }
+                }
+//                realmClass.executeTransactionAsync({ realm ->
+//                   realm.where(Author::class.java).equalTo("name", nameList[it]).findAll()
+//                       .map{addAuthor ->
+//                      bookObject.authors.add(addAuthor)
+//                   }
+//                }, {
+//                    Timber.d("Author added successfully")
+//                }, { throwable ->
+//                    Timber.d("Error adding the author %s", throwable.localizedMessage)
+//                })
             }
         }
             .setNegativeButton("Cancel", DialogInterface.OnClickListener{ dialog, id ->
