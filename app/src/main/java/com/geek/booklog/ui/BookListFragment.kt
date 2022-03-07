@@ -1,6 +1,5 @@
 package com.geek.booklog.ui
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,11 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.geek.booklog.LoginActivity
-import com.geek.booklog.R
 import com.geek.booklog.bookLogApp
 import com.geek.booklog.databinding.FragmentBookListBinding
-import com.geek.booklog.model.Book
-import com.geek.booklog.model.BookListAdapter
+import com.geek.booklog.realmmodel.BookRealm
+import com.geek.booklog.realmmodel.BookListAdapter
 import io.realm.Realm
 import io.realm.mongodb.User
 import io.realm.mongodb.sync.SyncConfiguration
@@ -74,7 +72,7 @@ class BookListFragment : Fragment() {
 
 
     private fun setUpRecyclerView() {
-       adapter = BookListAdapter(realmList.where(Book::class.java).sort("name").findAll())
+       adapter = BookListAdapter(realmList.where(BookRealm::class.java).sort("name").findAll())
         listBinding?.rvBookList?.adapter = adapter
     }
 

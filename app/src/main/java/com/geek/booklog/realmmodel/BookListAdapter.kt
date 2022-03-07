@@ -1,13 +1,12 @@
-package com.geek.booklog.model
+package com.geek.booklog.realmmodel
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
 import com.geek.booklog.R
 import io.realm.OrderedRealmCollection
 import io.realm.RealmRecyclerViewAdapter
 
-class BookListAdapter(books: OrderedRealmCollection<Book>): RealmRecyclerViewAdapter<Book, BookListHolder>(books, true) {
+class BookListAdapter(books: OrderedRealmCollection<BookRealm>): RealmRecyclerViewAdapter<BookRealm, BookListHolder>(books, true) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookListHolder {
        val view = LayoutInflater.from(parent.context).inflate(R.layout.booklist_item_layout, parent, false)

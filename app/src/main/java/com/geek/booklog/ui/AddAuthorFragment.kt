@@ -8,14 +8,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.geek.booklog.R
 import com.geek.booklog.bookLogApp
-import com.geek.booklog.model.Author
+import com.geek.booklog.realmmodel.Author
 import io.realm.Realm
 import io.realm.mongodb.sync.SyncConfiguration
 import kotlinx.android.synthetic.main.fragment_add_author.*
 import org.bson.types.ObjectId
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
-import javax.security.auth.callback.Callback
 
 
 class AddAuthorFragment : Fragment() {

@@ -1,23 +1,16 @@
 package com.geek.booklog.model
 
+import com.geek.booklog.realmmodel.Author
 import io.realm.RealmList
-import io.realm.RealmObject
-import io.realm.RealmResults
-import io.realm.annotations.LinkingObjects
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.Required
 import org.bson.types.ObjectId
 
-open class Book(
-    @PrimaryKey
-    var _id: ObjectId = ObjectId(),
-
-    @Required
-    var name: String = "",
+data class Book(
+    var name: String ="",
 
     var isRead: Boolean = false,
 
-    var _partition: String ="PUBLIC",
-
-    var authors: RealmList<Author> = RealmList()
-) : RealmObject() {}
+    var authors: ArrayList<Author> = ArrayList()
+) {
+}

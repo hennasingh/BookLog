@@ -1,21 +1,21 @@
-package com.geek.booklog.model
+package com.geek.booklog.realmmodel
 
 import io.realm.RealmList
 import io.realm.RealmObject
-import io.realm.RealmResults
-import io.realm.annotations.LinkingObjects
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.Required
 import org.bson.types.ObjectId
 
-open class Author(
-
+open class BookRealm(
     @PrimaryKey
     var _id: ObjectId = ObjectId(),
 
     @Required
     var name: String = "",
 
-    @LinkingObjects("authors")
-    val books: RealmResults<Book>? = null
-): RealmObject() { }
+    var isRead: Boolean = false,
+
+    var _partition: String ="PUBLIC",
+
+    var authors: RealmList<Author> = RealmList()
+) : RealmObject() {}

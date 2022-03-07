@@ -1,4 +1,4 @@
-package com.geek.booklog.model
+package com.geek.booklog.realmmodel
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -9,7 +9,7 @@ class BookListHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val bookName = itemView.bookName
     private val authorName = itemView.authorName
 
-    fun bindValues(book: Book?){
+    fun bindValues(book: BookRealm?){
 
     }
 }

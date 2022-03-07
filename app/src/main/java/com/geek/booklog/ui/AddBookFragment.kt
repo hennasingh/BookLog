@@ -12,11 +12,11 @@ import androidx.appcompat.app.AlertDialog
 import com.geek.booklog.R
 import com.geek.booklog.bookLogApp
 import com.geek.booklog.databinding.FragmentAddBookBinding
-import com.geek.booklog.model.Author
 import com.geek.booklog.model.Book
+import com.geek.booklog.realmmodel.Author
+import com.geek.booklog.realmmodel.BookRealm
 import io.realm.Realm
 import io.realm.RealmList
-import io.realm.RealmResults
 import io.realm.mongodb.sync.SyncConfiguration
 import org.bson.types.ObjectId
 import timber.log.Timber
@@ -80,12 +80,14 @@ class AddBookFragment : Fragment(){
                 }
         }
         addBinding!!.buttonAddBook.setOnClickListener{
-                realmClass.executeTransactionAsync ({
-                    it.insert(bookObject)
+                realmClass.executeTransactionAsync ({realm ->
+                  val booktoAdd = realm.createObject(BookRealm::class.java, ObjectId())
+                    booktoAdd.name = bookObject.name
+                    booktoAdd.isRead = bookObject.isRead
                 }, {
-
+                    Timber.d("Book Object Added Successfuly")
                 }, {throwError ->
-                    Timber.d("Error adding the author %s", throwError.localizedMessage)
+                    Timber.d("Error adding the bookObject to Database %s", throwError.localizedMessage)
                 })
         }
 
@@ -130,8 +132,9 @@ class AddBookFragment : Fragment(){
             selectedItems.forEach{
                 Timber.d("Authors, ${nameList[it]}")
                 realmClass.executeTransactionAsync({ realm ->
-                   realm.where(Author::class.java).equalTo("name", nameList[it]).findAll().map{authortoAdd ->
-                       authorsToAdd.add(authortoAdd)
+                   realm.where(Author::class.java).equalTo("name", nameList[it]).findAll()
+                       .map{addAuthor ->
+                      bookObject.authors.add(addAuthor)
                    }
                 }, {
                     Timber.d("Author added successfully")
@@ -139,7 +142,6 @@ class AddBookFragment : Fragment(){
                     Timber.d("Error adding the author %s", throwable.localizedMessage)
                 })
             }
-            bookObject.authors = authorsToAdd
         }
             .setNegativeButton("Cancel", DialogInterface.OnClickListener{ dialog, id ->
                     dialog.dismiss()
