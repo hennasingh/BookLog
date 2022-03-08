@@ -28,8 +28,7 @@ class AddBookFragment : Fragment(){
         private lateinit var realmClass: Realm
          var selectedItems: ArrayList<Int> = ArrayList()
          var addBinding: FragmentAddBookBinding? = null
-         var bookObject = Book()
-         private val authorsToAdd: RealmList<Author> = RealmList()
+         var bookObject = BookRealm()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,15 +79,19 @@ class AddBookFragment : Fragment(){
         }
         addBinding!!.buttonAddBook.setOnClickListener{
                 realmClass.executeTransactionAsync ({realm ->
-                    val booktoAdd = realm.createObject(BookRealm::class.java, ObjectId())
-                    booktoAdd.name = bookObject.name
-                    booktoAdd.isRead = bookObject.isRead
-                    booktoAdd.authors = realm.copyToRealm(bookObject.authors) as RealmList<Author>
+                    //val booktoAdd = realm.createObject(BookRealm::class.java, ObjectId())
+//                    booktoAdd.name = bookObject.name
+//                    booktoAdd.isRead = bookObject.isRead
+//                    booktoAdd.authors = realm.copyToRealmOrUpdate(authorsToAdd)
+                    realm.insertOrUpdate(bookObject)
 
                 }, {
                     Timber.d("Book Object Added Successfuly")
+                    Toast.makeText(requireContext(), "Book Object added successfully", Toast.LENGTH_LONG).show()
                 }, {throwError ->
                     Timber.d("Error adding the bookObject to Database %s", throwError.localizedMessage)
+
+                    Toast.makeText(requireContext(), "Error adding the bookObject to Database, ${throwError.localizedMessage} ", Toast.LENGTH_LONG).show()
                 })
         }
 
