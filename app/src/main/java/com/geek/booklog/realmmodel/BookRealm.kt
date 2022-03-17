@@ -15,7 +15,7 @@ open class BookRealm(
 
     var isRead: Boolean = false,
 
-    var _partition: String ="PUBLIC",
+    var _partition: String = "",
 
     var authors: RealmList<Author> = RealmList()
 ) : RealmObject() {}

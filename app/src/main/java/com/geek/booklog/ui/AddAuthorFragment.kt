@@ -30,25 +30,28 @@ class AddAuthorFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_add_author, container, false)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val config = SyncConfiguration.Builder(bookLogApp.currentUser(), bookLogApp.currentUser()?.id)
+            .waitForInitialRemoteData(500, TimeUnit.MILLISECONDS)
+            .build()
+
+        Realm.getInstanceAsync(config, object : Realm.Callback() {
+            override fun onSuccess(realm: Realm) {
+                realmClass = realm
+            }
+        })
+    }
+
     private fun addAuthor() {
 
         if(!validateText()){
             addAuthorFailed("Field cannot be empty")
             return
         }
-
         val authorName = authorName.text.toString()
-
-        val config = SyncConfiguration.Builder(bookLogApp.currentUser(), "PUBLIC")
-            .waitForInitialRemoteData(500, TimeUnit.MILLISECONDS)
-            .build()
-
-        Realm.getInstanceAsync(config, object : Realm.Callback() {
-            override fun onSuccess(realm: Realm) {
-                    realmClass = realm
-                 createAuthorObject(authorName)
-            }
-        })
+        createAuthorObject(authorName)
     }
 
     private fun createAuthorObject(authorName: String) {
@@ -82,12 +85,10 @@ class AddAuthorFragment : Fragment() {
         realmClass.close()
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         button_add.setOnClickListener{
             addAuthor()
         }
     }
-
-
 }

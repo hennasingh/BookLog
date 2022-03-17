@@ -3,6 +3,7 @@ package com.geek.booklog.ui
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -27,19 +28,20 @@ class AddBookFragment : Fragment(){
 
         private lateinit var realmClass: Realm
          var selectedItems: ArrayList<Int> = ArrayList()
-         var addBinding: FragmentAddBookBinding? = null
-         var bookObject = BookRealm()
+         private var addBinding: FragmentAddBookBinding? = null
+         private lateinit var bookObject:BookRealm
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val config = SyncConfiguration.Builder(bookLogApp.currentUser(), "PUBLIC")
+        val config = SyncConfiguration.Builder(bookLogApp.currentUser(), bookLogApp.currentUser()?.id)
             .build()
 
         Realm.getInstanceAsync(config, object: Realm.Callback(){
             override fun onSuccess(realm: Realm) {
                 realmClass = realm
+                bookObject = BookRealm(_partition = bookLogApp.currentUser()!!.id)
             }
         })
     }
@@ -79,10 +81,7 @@ class AddBookFragment : Fragment(){
         }
         addBinding!!.buttonAddBook.setOnClickListener{
                 realmClass.executeTransactionAsync ({realm ->
-                    //val booktoAdd = realm.createObject(BookRealm::class.java, ObjectId())
-//                    booktoAdd.name = bookObject.name
-//                    booktoAdd.isRead = bookObject.isRead
-//                    booktoAdd.authors = realm.copyToRealmOrUpdate(authorsToAdd)
+                    Timber.d("partition added %s ", bookObject._partition)
                     realm.insertOrUpdate(bookObject)
 
                 }, {
@@ -102,9 +101,6 @@ class AddBookFragment : Fragment(){
         realmClass.executeTransactionAsync({
             val authorList = it.where(Author::class.java).sort("name").findAll()
              nameList = it.copyFromRealm(authorList) as ArrayList<Author>
-//            authorList.toTypedArray().map { obj ->
-//                nameList.add(obj.name)
-//            }
         }, {
             if(nameList.size>0) openDialogBox(nameList)
             else {
@@ -141,16 +137,6 @@ class AddBookFragment : Fragment(){
                         bookObject.authors.add(author)
                     }
                 }
-//                realmClass.executeTransactionAsync({ realm ->
-//                   realm.where(Author::class.java).equalTo("name", nameList[it]).findAll()
-//                       .map{addAuthor ->
-//                      bookObject.authors.add(addAuthor)
-//                   }
-//                }, {
-//                    Timber.d("Author added successfully")
-//                }, { throwable ->
-//                    Timber.d("Error adding the author %s", throwable.localizedMessage)
-//                })
             }
         }
             .setNegativeButton("Cancel", DialogInterface.OnClickListener{ dialog, id ->
