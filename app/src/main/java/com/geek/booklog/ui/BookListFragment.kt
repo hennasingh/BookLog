@@ -40,15 +40,8 @@ class BookListFragment : Fragment() {
 
             val config = SyncConfiguration.Builder(
                 bookLogApp.currentUser(),
-                "PUBLIC"
+                bookLogApp.currentUser()?.id
             ).build()
-
-            //        Realm.getInstanceAsync(config, object:Realm.Callback(){
-//            override fun onSuccess(realm: Realm) {
-//                Timber.d("Realm downloaded")
-//                realmList = realm
-//            }
-//        })
 
             realmList = Realm.getInstance(config)
         }
